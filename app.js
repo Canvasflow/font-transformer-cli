@@ -31,13 +31,13 @@ function createFontFolder(fontName) {
 }
 
 function createWoff(fontPath, name, input) {
-    const woffPath = path.join(fontPath, `${name}.woff`);
+    const woffPath = path.join(fontPath, `webfont.woff`);
     
     fs.writeFileSync(woffPath, ttf2woff(input).buffer);
 }
 
 function createWoff2(fontPath, name, input) {
-    const woff2Path = path.join(fontPath, `${name}.woff2`);
+    const woff2Path = path.join(fontPath, `webfont.woff2`);
 
     fs.writeFileSync(woff2Path, ttf2woff2(input));
 }
