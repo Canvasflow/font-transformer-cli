@@ -3,7 +3,18 @@ var path = require('path');
 var ttf2woff2 = require('ttf2woff2');
 var ttf2woff = require('ttf2woff');
 
-readFonts();
+const inDir = path.join(__dirname, 'In');
+const outDir = path.join(__dirname, 'Out');
+
+const inType = process.env.IN_TYPE;
+const outType = process.env.OUT_TYPE;
+
+function run() {
+    console.log(`In type: ${inType}`);
+    console.log(`Out type: ${outType}`);
+}
+
+// readFonts();
 
 function readFonts() {
     const inDir = path.join(__dirname, 'In');
@@ -41,3 +52,26 @@ function createWoff2(fontPath, name, input) {
 
     fs.writeFileSync(woff2Path, ttf2woff2(input));
 }
+
+async function Otf2Ttf(filepath, outputPath) {
+    return new Promise((resolve, reject) => {
+      const otfBuffer = fs.readFileSync(filepath);
+      const font = Font.create(otfBuffer, {
+        type: 'otf'
+      });
+      
+      var ttfBuffer = font.write({
+        type: 'woff'
+      });
+      
+      const ttfPath = `${path.basename(filepath, '.otf')}.ttf`;
+      fs.writeFile(ttfPath, ttfBuffer, (err) => {
+          if(err) {
+              reject(err);
+              return;
+          }
+  
+          resolve(ttfPath);
+      })
+    });
+  }
