@@ -82,7 +82,8 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
-/Out/**/*.woff
-/Out/**/*.woff2
+# Jetbrains IDES
+.idea/
 
-/In/**/*.ttf
+/Out/**/*
+/In/**/*
