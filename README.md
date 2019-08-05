@@ -8,6 +8,9 @@ Copy all the `.ttf` or `.otf` files inside the folder `In`.
 # Run
 Now for run the program you need to specify what is the conversion you would like to perform.
 
+## Start
+Run `npm start`, this will run all the below scripts
+
 ## TTF to WOFF
 Run `npm run ttf:woff`, this will read all the `.ttf` files inside the `In` directory and transform them to `.woff` files on the `Out` directory.
 
