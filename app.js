@@ -12,12 +12,12 @@ const outType = process.env.OUT_TYPE;
 
 run()
     .then((outputFiles) => {
-        console.log(`Created files`);
-        console.log(`-------------`);
+        console.log(`Transform '${inType}' files to '${outType}':`);
+        console.log(`--------------------------------------------`);
         for (let file of outputFiles) {
             console.log(file);
         }
-        console.log(`-------------`);
+        console.log(`--------------------------------------------`);
     })
     .catch(err => console.error(err));
 
