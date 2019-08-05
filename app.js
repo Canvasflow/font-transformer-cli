@@ -1,7 +1,8 @@
 var fs = require('fs');
 var path = require('path');
-var ttf2woff2 = require('ttf2woff2');
-var ttf2woff = require('ttf2woff');
+
+const ttf2Woff = require('./ttf-to-woff');
+const otf2Woff = require('./otf-to-woff');
 
 const inDir = path.join(__dirname, 'In');
 const outDir = path.join(__dirname, 'Out');
@@ -9,69 +10,39 @@ const outDir = path.join(__dirname, 'Out');
 const inType = process.env.IN_TYPE;
 const outType = process.env.OUT_TYPE;
 
-function run() {
-    console.log(`In type: ${inType}`);
-    console.log(`Out type: ${outType}`);
+run()
+    .then((outputFiles) => {
+        console.log(`Created files`);
+        console.log(`-------------`);
+        for (let file of outputFiles) {
+            console.log(file);
+        }
+        console.log(`-------------`);
+    })
+    .catch(err => console.error(err));
+
+async function run() {
+    const inputFonts = getFonts(inType);
+    let outputFiles = [];
+    if (inType === 'otf' && outType === 'woff') {
+        outputFiles = await otf2Woff.otfsToWoff(inputFonts, outDir);
+    } else if (inType === 'otf' && outType === 'woff2') {
+
+        outputFiles = await otf2Woff.otfsToWoff2(inputFonts, outDir);
+    } else if (inType === 'ttf' && outType === 'woff') {
+        outputFiles = await ttf2Woff.ttfsToWoff(inputFonts, outDir);
+    } else if (inType === 'ttf' && outType === 'woff2') {
+        outputFiles = await ttf2Woff.ttfsToWoff2(inputFonts, outDir);
+    }
+
+    return outputFiles;
 }
 
-// readFonts();
-
-function readFonts() {
-    const inDir = path.join(__dirname, 'In');
+function getFonts(extension) {
     const inputs = fs.readdirSync(inDir);
-    const fonts = inputs
-        .filter(font => /(.)+\.ttf/gi.test(font))
-        .map(font => font.replace('.ttf',''));
 
-    for(let font of fonts) {
-        createFontFolder(font);
-    }
+    return inputs.filter(font => {
+        const regexString = `(.)+\.${extension}`;
+        return new RegExp(regexString, 'gi').test(font)
+    }).map(font => `${path.join(inDir, font)}`);
 }
-
-function createFontFolder(fontName) {
-    const fontNamePath = path.join(__dirname, 'In', `${fontName}.ttf`);
-    const outDir = path.join(__dirname, 'Out', fontName);
-    if (!fs.existsSync(outDir)){
-        fs.mkdirSync(outDir);
-    }
-
-    var input = fs.readFileSync(fontNamePath);
-
-    createWoff(outDir, fontName, input);
-    createWoff2(outDir, fontName, input);
-}
-
-function createWoff(fontPath, name, input) {
-    const woffPath = path.join(fontPath, `webfont.woff`);
-    
-    fs.writeFileSync(woffPath, ttf2woff(input).buffer);
-}
-
-function createWoff2(fontPath, name, input) {
-    const woff2Path = path.join(fontPath, `webfont.woff2`);
-
-    fs.writeFileSync(woff2Path, ttf2woff2(input));
-}
-
-async function Otf2Ttf(filepath, outputPath) {
-    return new Promise((resolve, reject) => {
-      const otfBuffer = fs.readFileSync(filepath);
-      const font = Font.create(otfBuffer, {
-        type: 'otf'
-      });
-      
-      var ttfBuffer = font.write({
-        type: 'woff'
-      });
-      
-      const ttfPath = `${path.basename(filepath, '.otf')}.ttf`;
-      fs.writeFile(ttfPath, ttfBuffer, (err) => {
-          if(err) {
-              reject(err);
-              return;
-          }
-  
-          resolve(ttfPath);
-      })
-    });
-  }
