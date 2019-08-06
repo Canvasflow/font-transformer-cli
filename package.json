@@ -1,10 +1,10 @@
 {
   "name": "ttf-to-woff",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "IN_TYPE=ttf OUT_TYPE=woff node app.js && IN_TYPE=ttf OUT_TYPE=woff2 node app.js && IN_TYPE=otf OUT_TYPE=woff node app.js && IN_TYPE=otf OUT_TYPE=woff2 node app.js",
+    "start": "IN_TYPE=ttf OUT_TYPE=woff node app.js && IN_TYPE=ttf OUT_TYPE=woff2 node app.js && IN_TYPE=otf OUT_TYPE=woff node app.js && IN_TYPE=otf OUT_TYPE=woff2 node app.js && node group-fonts.js",
     "ttf:woff": "IN_TYPE=ttf OUT_TYPE=woff node app.js",
     "ttf:woff2": "IN_TYPE=ttf OUT_TYPE=woff2 node app.js",
     "ttf:woff:woff2": "IN_TYPE=ttf OUT_TYPE=woff node app.js && IN_TYPE=ttf OUT_TYPE=woff2 node app.js",
