@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "IN_TYPE=ttf OUT_TYPE=woff node app.js && IN_TYPE=ttf OUT_TYPE=woff2 node app.js && IN_TYPE=otf OUT_TYPE=woff node app.js && IN_TYPE=otf OUT_TYPE=woff2 node app.js && node group-fonts.js",
+    "start": "node all.js",
     "ttf:woff": "IN_TYPE=ttf OUT_TYPE=woff node app.js",
     "ttf:woff2": "IN_TYPE=ttf OUT_TYPE=woff2 node app.js",
     "ttf:woff:woff2": "IN_TYPE=ttf OUT_TYPE=woff node app.js && IN_TYPE=ttf OUT_TYPE=woff2 node app.js",
