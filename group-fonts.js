@@ -1,5 +1,5 @@
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
 const outDir = path.join(__dirname, 'Out');
 
@@ -44,3 +44,7 @@ function getFonts() {
 
   return fonts
 }
+
+module.exports = {
+    run: run
+};

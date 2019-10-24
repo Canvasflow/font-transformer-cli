@@ -1,28 +1,33 @@
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
 const ttf2Woff = require('./ttf-to-woff');
 const otf2Woff = require('./otf-to-woff');
 
-const inDir = path.join(__dirname, 'In');
-const outDir = path.join(__dirname, 'Out');
-
 const inType = process.env.IN_TYPE;
 const outType = process.env.OUT_TYPE;
 
-run()
+run(inType, outType)
     .then((outputFiles) => {
-        console.log(`Transform '${inType}' files to '${outType}':`);
-        console.log(`--------------------------------------------`);
-        for (let file of outputFiles) {
-            console.log(file);
+        if(!!inType && !!outType) {
+            console.log(`Transform '${inType}' files to '${outType}':`);
+            console.log(`--------------------------------------------`);
+            for (let file of outputFiles) {
+                console.log(file);
+            }
+            console.log(`--------------------------------------------`);
         }
-        console.log(`--------------------------------------------`);
     })
     .catch(err => console.error(err));
 
-async function run() {
-    const inputFonts = getFonts(inType);
+async function run(inType, outType) {
+    if(!inType || !outType) {
+        return;
+    }
+    const inDir = path.join(__dirname, 'In');
+    const outDir = path.join(__dirname, 'Out');
+
+    const inputFonts = getFonts(inType, inDir);
     let outputFiles = [];
     if (inType === 'otf' && outType === 'woff') {
         outputFiles = await otf2Woff.otfsToWoff(inputFonts, outDir);
@@ -38,7 +43,7 @@ async function run() {
     return outputFiles;
 }
 
-function getFonts(extension) {
+function getFonts(extension, inDir) {
     const inputs = fs.readdirSync(inDir);
 
     return inputs.filter(font => {
@@ -46,3 +51,7 @@ function getFonts(extension) {
         return new RegExp(regexString, 'gi').test(font)
     }).map(font => `${path.join(inDir, font)}`);
 }
+
+module.exports = {
+    run: run
+};
