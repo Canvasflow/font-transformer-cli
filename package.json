@@ -1,5 +1,5 @@
 {
-  "name": "ttf-to-woff",
+  "name": "font-transformer-cli",
   "version": "1.3.0",
   "description": "",
   "main": "app.js",
@@ -11,22 +11,24 @@
     "otf:woff": "IN_TYPE=otf OUT_TYPE=woff node app.js",
     "otf:woff2": "IN_TYPE=otf OUT_TYPE=woff2 node app.js",
     "otf:woff:woff2": "IN_TYPE=otf OUT_TYPE=woff node app.js && IN_TYPE=otf OUT_TYPE=woff2 node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --watchAll --verbose"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Canvasflow/ttf-to-woff.git"
+    "url": "git+https://github.com/Canvasflow/font-transformer-cli.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Canvasflow/ttf-to-woff/issues"
+    "url": "https://github.com/Canvasflow/font-transformer-cli/issues"
   },
-  "homepage": "https://github.com/Canvasflow/ttf-to-woff#readme",
+  "homepage": "https://github.com/Canvasflow/font-transformer-cli#readme",
   "dependencies": {
-    "fonteditor-core": "^2.1.8",
-    "ttf2woff": "^2.0.2",
-    "ttf2woff2": "^4.0.3",
-    "webfont": "^11.2.4"
+    "fonteditor-core": "^2.1.8"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "jest": "^27.0.6",
+    "vite": "^2.4.2"
   }
 }
