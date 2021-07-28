@@ -27,10 +27,21 @@ function copyFontsToDir(fonts) {
 		for (const type of fontTypes) {
 			const fontPath = path.join(outDir, `${font}.${type}`);
 			if (fs.existsSync(fontPath)) {
-				fs.renameSync(
-					fontPath,
-					path.join(baseFontPath, `webfont.${type}`)
-				);
+				switch (type) {
+					case 'otf':
+					case 'ttf':
+						fs.renameSync(
+							fontPath,
+							path.join(baseFontPath, `${font}.${type}`)
+						);
+						break;
+					default:
+						fs.renameSync(
+							fontPath,
+							path.join(baseFontPath, `webfont.${type}`)
+						);
+						break;
+				}
 			}
 		}
 	}
