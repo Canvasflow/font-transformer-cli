@@ -87,3 +87,5 @@ typings/
 
 /Out/**/*
 /In/**/*
+
+.DS_Store
