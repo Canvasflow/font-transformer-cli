@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { otfToWoff, otfToWoff2, otfToTtf } = require('../otf-to');
 describe('Transform otf fonts', () => {
-	const fontName = 'ArialMTStd-Light';
+	const fontName = 'NoeText-Bold';
 	const otfPath = path.join(__dirname, '..', 'In', `${fontName}.otf`);
 	const outDir = path.join(__dirname, '..', 'Out');
 
@@ -25,7 +25,7 @@ describe('Transform otf fonts', () => {
 		});
 	});
 
-	it('Transform oft to ttf', () => {
+	it.skip('Transform oft to ttf', () => {
 		const targetTtfPath = path.join(outDir, `${fontName}.ttf`);
 
 		expect(fs.existsSync(otfPath)).toBe(true);

@@ -4,6 +4,8 @@ const path = require('path');
 const Font = require('fonteditor-core').Font;
 const woff2 = require('fonteditor-core').woff2;
 
+const util = require('./util');
+
 async function otfToTtf(filepath, outDir) {
 	return new Promise((resolve, reject) => {
 		const otfBuffer = fs.readFileSync(filepath);
@@ -41,20 +43,23 @@ async function otfToWoff(file, outDir) {
 			type: 'woff',
 			hinting: true,
 			deflate: null,
-			support: { head: {}, hhea: {} },
 		});
 
-		const woffPath = path.join(
-			outDir,
-			`${path.basename(file, '.otf')}.woff`
-		);
+		font.optimize();
+
+		let woffPath = path.join(outDir, `${path.basename(file, '.otf')}.woff`);
+
 		fs.writeFile(woffPath, woffBuffer, (err) => {
 			if (err) {
 				reject(err);
 				return;
 			}
 			fs.copyFileSync(file, woffPath);
-			resolve(woffPath);
+			util.optimize(woffPath)
+				.then(() => {
+					resolve(woffPath);
+				})
+				.catch(reject);
 		});
 	});
 }
@@ -67,13 +72,19 @@ async function otfToWoff2(file, outDir) {
 				const otfBuffer = fs.readFileSync(file);
 				const font = Font.create(otfBuffer, {
 					type: 'otf',
+					compound2simple: true,
 				});
+
+				font.optimize();
+				font.compound2simple();
+
+				// sort glyf
+				font.sort();
 
 				const woffBuffer = font.write({
 					type: 'woff2',
 					hinting: true,
 					deflate: null,
-					support: { head: {}, hhea: {} },
 				});
 
 				const woff2Path = path.join(
@@ -86,7 +97,11 @@ async function otfToWoff2(file, outDir) {
 						return;
 					}
 					fs.copyFileSync(file, woff2Path);
-					resolve(woff2Path);
+					util.optimize(woff2Path)
+						.then(() => {
+							resolve(woff2Path);
+						})
+						.catch(reject);
 				});
 			})
 			.catch(reject);
@@ -110,5 +125,5 @@ module.exports = {
 	},
 	otfToWoff,
 	otfToWoff2,
-    otfToTtf
+	otfToTtf,
 };
