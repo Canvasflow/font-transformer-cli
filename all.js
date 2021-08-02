@@ -9,15 +9,7 @@ async function compile() {
     const transform = [
         {
             in: 'ttf',
-            out: 'woff'
-        },
-        {
-            in: 'ttf',
             out: 'woff2'
-        },
-        {
-            in: 'otf',
-            out: 'woff'
         },
         {
             in: 'otf',
