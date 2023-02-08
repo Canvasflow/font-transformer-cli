@@ -20,10 +20,10 @@ async function compile() {
     for(const item of transform) {
         const inType = item.in;
         const outType = item.out;
-
-        const outputFiles = await app.run(inType, outType);
         console.log(`Transform '${inType}' files to '${outType}':`);
         console.log(`--------------------------------------------`);
+        const outputFiles = await app.run(inType, outType);
+        
         for (let file of outputFiles) {
             console.log(file);
         }

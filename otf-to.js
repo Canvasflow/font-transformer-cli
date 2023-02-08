@@ -111,15 +111,43 @@ async function otfToWoff2(file, outDir) {
 module.exports = {
 	otfsToWoff: async function (files, outDir) {
 		const woffFiles = [];
-		for (let filePath of files) {
-			woffFiles.push(await otfToWoff(filePath, outDir));
+		let promises = [];
+		for(const filePath of files) {
+			if(promises.length === constants.GROUPING_MAX) {
+				for(const f of await Promise.all(promises)) {
+					woffFiles.push(f);
+				}
+				printSeparator();
+				promises = [];
+			}
+			promises.push(otfToWoff(filePath, outDir))
+		}
+		if(promises.length) {
+			for(const f of await Promise.all(promises)) {
+				woffFiles.push(f);
+			}
+			printSeparator();
 		}
 		return woffFiles;
 	},
 	otfsToWoff2: async function (files, outDir) {
 		const woff2Files = [];
-		for (let otfFilePath of files) {
-			woff2Files.push(await otfToWoff2(otfFilePath, outDir));
+		let promises = [];
+		for(const filePath of files) {
+			if(promises.length === constants.GROUPING_MAX) {
+				for(const f of await Promise.all(promises)) {
+					woff2Files.push(f);
+				}
+				printSeparator();
+				promises = [];
+			}
+			promises.push(otfToWoff2(filePath, outDir))
+		}
+		if(promises.length) {
+			for(const f of await Promise.all(promises)) {
+				woff2Files.push(f);
+			}
+			printSeparator();
 		}
 		return woff2Files;
 	},
