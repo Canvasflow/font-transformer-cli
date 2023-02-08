@@ -3,6 +3,7 @@ const path = require('path');
 
 const Font = require('fonteditor-core').Font;
 const woff2 = require('fonteditor-core').woff2;
+
 const util = require('./util');
 const constants = require('./constants');
 

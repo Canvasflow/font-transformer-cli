@@ -1,3 +1,3 @@
 module.exports = {
-    GROUPING_MAX: 5
+    GROUPING_MAX: 10
 }

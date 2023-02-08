@@ -5,6 +5,7 @@ const Font = require('fonteditor-core').Font;
 const woff2 = require('fonteditor-core').woff2;
 
 const util = require('./util');
+const constants = require('./constants');
 
 async function otfToTtf(filepath, outDir) {
 	return new Promise((resolve, reject) => {
@@ -69,6 +70,7 @@ async function otfToWoff2(file, outDir) {
 		woff2
 			.init()
 			.then(() => {
+				console.log(`Processing file: "${file}"`);
 				const otfBuffer = fs.readFileSync(file);
 				const font = Font.create(otfBuffer, {
 					type: 'otf',
@@ -99,6 +101,7 @@ async function otfToWoff2(file, outDir) {
 					fs.copyFileSync(file, woff2Path);
 					util.optimize(woff2Path)
 						.then(() => {
+							console.log(`Finish processing file: "${file}"`);
 							resolve(woff2Path);
 						})
 						.catch(reject);
@@ -155,3 +158,7 @@ module.exports = {
 	otfToWoff2,
 	otfToTtf,
 };
+
+function printSeparator() {
+	console.log(`-------------------------------`);
+}
