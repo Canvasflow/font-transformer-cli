@@ -27,7 +27,7 @@ async function run(inType, outType) {
 	const inDir = path.join(__dirname, 'In');
 	const outDir = path.join(__dirname, 'Out');
 
-	const inputFonts = getFonts(inType, inDir);
+	const inputFonts = await getPostcripNames(getFonts(inType, inDir));
 	let outputFiles = [];
 	if (inType === 'otf' && outType === 'woff') {
 		outputFiles = await otf2Woff.otfsToWoff(inputFonts, outDir);
@@ -55,6 +55,11 @@ function getFonts(extension, inDir) {
 			return new RegExp(regexString, 'gi').test(font);
 		})
 		.map((font) => `${path.join(inDir, font)}`);
+}
+
+// TODO Implement postcript transformation
+async function getPostcripNames(inputFiles) {
+	return inputFiles;
 }
 
 module.exports = {
