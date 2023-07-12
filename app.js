@@ -63,10 +63,11 @@ async function getPostcripNames(inputFiles) {
   for (let index = 0; index < inputFiles.length; index++) {
     let file = inputFiles[index];
     const font = fs.readFileSync(file);
-    const fontInfo = getFont(font);
-    const postcript = fontInfo.name.postScriptName;
     const filename = path.parse(file).name;
     const extension = file.split(".").pop();
+    const fontInfo = getFont(font, extension);
+    const postcript = fontInfo.name.postScriptName;
+
     const newFile = `${path.dirname(file)}/${postcript}.${extension}`;
 
     if (postcript !== filename) {
@@ -79,9 +80,9 @@ async function getPostcripNames(inputFiles) {
   return inputFiles;
 }
 
-function getFont(font) {
+function getFont(font, extension) {
   return Font.create(font, {
-    type: "ttf",
+    type: extension,
     subset: [65, 66],
     hinting: true,
     compound2simple: true,
