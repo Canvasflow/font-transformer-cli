@@ -65,6 +65,7 @@ async function getPostcripNames(inputFiles) {
     const font = fs.readFileSync(file);
     const filename = path.parse(file).name;
     const extension = file.split(".").pop();
+    console.log("opening file: ", file);
     const fontInfo = getFont(font, extension);
     const postcript = fontInfo.name.postScriptName;
 
