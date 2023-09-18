@@ -62,15 +62,14 @@ function getFonts(extension, inDir) {
 async function getPostcripNames(inputFiles) {
   for (let index = 0; index < inputFiles.length; index++) {
     let file = inputFiles[index];
+    file = file.toLowerCase();
     const font = fs.readFileSync(file);
     const filename = path.parse(file).name;
     const extension = file.split(".").pop();
     console.log("opening file: ", file);
     const fontInfo = getFont(font, extension);
     const postcript = fontInfo.name.postScriptName;
-
     const newFile = `${path.dirname(file)}/${postcript}.${extension}`;
-
     if (postcript !== filename) {
       await fs.rename(file, newFile, () => {
         console.log("NEW FILE: ", newFile);
