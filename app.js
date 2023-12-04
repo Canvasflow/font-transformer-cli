@@ -67,17 +67,24 @@ function getFonts(extension, inDir) {
     .map((font) => `${path.join(inDir, font)}`);
 }
 
-function getFolderFonts(path, folder) {
-  const inputs = fs.readdirSync(`${path}/${folder}`);
+function getFolderFonts(pathName, folder) {
+  const inputs = fs.readdirSync(`${pathName}/${folder}`);
   const fonts = [];
   for (const input of inputs) {
-    if (fs.lstatSync(`${path}/${folder}/${input}`).isDirectory()) {
-      fonts.push(...getFolderFonts(path, `${folder}/${input}`));
+    const fileName = path.basename(`${pathName}/${folder}/${input}`);
+    if (fs.lstatSync(`${pathName}/${folder}/${input}`).isDirectory()) {
+      getFolderFonts(pathName, `${folder}/${input}`);
     } else {
-      fonts.push(`/${folder}/${input}`);
+      moveFont(`/${folder}/${input}`, pathName, fileName);
+      fonts.push(fileName);
     }
   }
   return fonts;
+}
+
+function moveFont(filepath, path, fileName) {
+  fs.copyFileSync(`${path}${filepath}`, `${path}/${fileName}`);
+  fs.rmSync(`${path}${filepath}`);
 }
 
 async function getPostcripNames(inputFiles) {
