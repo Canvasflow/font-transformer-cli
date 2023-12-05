@@ -8,6 +8,9 @@ const otf2Woff = require("./otf-to");
 
 const inType = process.env.IN_TYPE;
 const outType = process.env.OUT_TYPE;
+const flag = process.env.OPT_GROUPS;
+
+const VALID_EXTENSIONS = new Set(["ttf", "otf"]);
 
 run(inType, outType)
   .then((outputFiles) => {
@@ -29,6 +32,52 @@ async function run(inType, outType) {
   const inDir = path.join(__dirname, "In");
   const outDir = path.join(__dirname, "Out");
 
+  const params = {
+    inDir,
+    outDir,
+    outType,
+    inType,
+  };
+
+  if (flag) {
+    return await fontsByPublication(params);
+  }
+
+  const fonts = await processFonts(params);
+  cleanupFolder(inDir, VALID_EXTENSIONS);
+  return fonts;
+}
+
+async function fontsByPublication(params) {
+  const { inDir, outType, outDir, inType } = params;
+  const publications = fs
+    .readdirSync(inDir)
+    .filter((file) => fs.lstatSync(path.join(inDir, file)).isDirectory());
+
+  let results = [];
+
+  for (const publication of publications) {
+    const inPublicationPath = path.join(inDir, publication);
+    const outPublicationPath = path.join(outDir, publication);
+
+    if (!fs.existsSync(outPublicationPath)) {
+      fs.mkdirSync(outPublicationPath);
+    }
+
+    const response = await processFonts({
+      inDir: inPublicationPath,
+      outType,
+      outDir: outPublicationPath,
+      inType,
+    });
+
+    results = results.concat(response);
+  }
+
+  return results;
+}
+
+async function processFonts({ inDir, outDir, outType, inType }) {
   const inputFonts = await getPostcripNames(getFonts(inType, inDir));
   let outputFiles = [];
   if (inType === "otf" && outType === "woff") {
@@ -75,7 +124,10 @@ function getFolderFonts(pathName, folder) {
     if (fs.lstatSync(`${pathName}/${folder}/${input}`).isDirectory()) {
       getFolderFonts(pathName, `${folder}/${input}`);
     } else {
-      moveFont(`/${folder}/${input}`, pathName, fileName);
+      if (!flag) {
+        moveFont(`/${folder}/${input}`, pathName, fileName);
+      }
+
       fonts.push(fileName);
     }
   }
@@ -85,6 +137,36 @@ function getFolderFonts(pathName, folder) {
 function moveFont(filepath, path, fileName) {
   fs.copyFileSync(`${path}${filepath}`, `${path}/${fileName}`);
   fs.rmSync(`${path}${filepath}`);
+}
+
+function cleanupFolder(dir, validExtensions) {
+  const inputs = fs.readdirSync(dir);
+  for (const input of inputs) {
+    const filePath = path.join(dir, input);
+    if (fs.lstatSync(filePath).isDirectory()) {
+      cleanupFolder(filePath, validExtensions);
+    } else {
+      const extension = input.split(".").pop();
+      if (!validExtensions.has(extension)) {
+        fs.rmSync(filePath);
+      }
+    }
+  }
+  removeEmptyFolders(dir);
+}
+
+function removeEmptyFolders(dir) {
+  const inputs = fs.readdirSync(dir);
+  for (const input of inputs) {
+    const filePath = path.join(dir, input);
+    if (fs.lstatSync(filePath).isDirectory()) {
+      if (isEmpty(filePath)) {
+        fs.rmdirSync(filePath);
+        continue;
+      }
+      removeFolders(filePath);
+    }
+  }
 }
 
 async function getPostcripNames(inputFiles) {
@@ -106,6 +188,10 @@ async function getPostcripNames(inputFiles) {
     }
   }
   return inputFiles;
+}
+
+function isEmpty(path) {
+  return fs.readdirSync(path).length === 0;
 }
 
 function getFont(font, extension) {
