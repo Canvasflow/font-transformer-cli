@@ -101,13 +101,12 @@ function getFonts(extension, inDir) {
   const inputs = fs.readdirSync(inDir);
   const fonts = [];
   for (const input of inputs) {
-    if (fs.lstatSync(`${inDir}/${input}`).isDirectory()) {
+    if (fs.lstatSync(path.join(inDir, input)).isDirectory()) {
       fonts.push(...getFolderFonts(inDir, input));
     } else {
       fonts.push(input);
     }
   }
-
   return fonts
     .filter((font) => {
       const regexString = `(.)+\.${extension}`;
@@ -117,26 +116,28 @@ function getFonts(extension, inDir) {
 }
 
 function getFolderFonts(pathName, folder) {
-  const inputs = fs.readdirSync(`${pathName}/${folder}`);
+  const inputs = fs.readdirSync(path.join(pathName, folder));
+  const location = path.join(pathName, folder);
   const fonts = [];
   for (const input of inputs) {
-    const fileName = path.basename(`${pathName}/${folder}/${input}`);
-    if (fs.lstatSync(`${pathName}/${folder}/${input}`).isDirectory()) {
-      getFolderFonts(pathName, `${folder}/${input}`);
+    const fileName = path.basename(path.join(location, input));
+    if (fs.lstatSync(path.join(location, input)).isDirectory()) {
+      getFolderFonts(pathName, path.join(folder, input));
     } else {
       if (!flag) {
-        moveFont(`/${folder}/${input}`, pathName, fileName);
+        moveFont(path.join(folder, input), pathName, fileName);
+        fonts.push(fileName);
+      } else {
+        fonts.push(path.join(folder, input));
       }
-
-      fonts.push(fileName);
     }
   }
   return fonts;
 }
 
-function moveFont(filepath, path, fileName) {
-  fs.copyFileSync(`${path}${filepath}`, `${path}/${fileName}`);
-  fs.rmSync(`${path}${filepath}`);
+function moveFont(filepath, location, fileName) {
+  fs.copyFileSync(path.join(location, filepath), path.join(filepath, fileName));
+  fs.rmSync(path.join(location, filepath));
 }
 
 function cleanupFolder(dir, validExtensions) {
@@ -170,6 +171,7 @@ function removeEmptyFolders(dir) {
 }
 
 async function getPostcripNames(inputFiles) {
+  console.log(inputFiles);
   for (let index = 0; index < inputFiles.length; index++) {
     let file = inputFiles[index];
     file = file.toLowerCase();
