@@ -176,12 +176,23 @@ async function getPostcripNames(inputFiles) {
     // file = file.toLowerCase();
     const font = fs.readFileSync(file);
     const filename = path.parse(file).name;
-    const extension = file.split(".").pop();
+    let extension = file.split(".").pop();
+    extension = extension.toLowerCase();
     console.log("opening file: ", file);
     const fontInfo = getFont(font, extension);
     const postcript = fontInfo.name.postScriptName;
     const newFile = `${path.dirname(file)}/${postcript}.${extension}`;
     if (postcript !== filename) {
+      console.log(
+        "RENAMED FILE (different postscript name): ",
+        `${path.dirname(file)}/${postcript}.${extension}`,
+      );
+      fs.renameSync(file, newFile);
+      inputFiles[index] = newFile;
+    }
+
+    if (file.split(".").pop() !== extension) {
+      console.log("RENAMED FILE (extension in uppercase): ");
       fs.renameSync(file, newFile);
       inputFiles[index] = newFile;
     }
