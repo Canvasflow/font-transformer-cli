@@ -136,7 +136,7 @@ function getFolderFonts(pathName, folder) {
 }
 
 function moveFont(filepath, location, fileName) {
-  fs.copyFileSync(path.join(location, filepath), path.join(filepath, fileName));
+  fs.copyFileSync(path.join(location, filepath), path.join(location, fileName));
   fs.rmSync(path.join(location, filepath));
 }
 
@@ -171,10 +171,9 @@ function removeEmptyFolders(dir) {
 }
 
 async function getPostcripNames(inputFiles) {
-  console.log(inputFiles);
   for (let index = 0; index < inputFiles.length; index++) {
     let file = inputFiles[index];
-    file = file.toLowerCase();
+    // file = file.toLowerCase();
     const font = fs.readFileSync(file);
     const filename = path.parse(file).name;
     const extension = file.split(".").pop();
@@ -183,9 +182,7 @@ async function getPostcripNames(inputFiles) {
     const postcript = fontInfo.name.postScriptName;
     const newFile = `${path.dirname(file)}/${postcript}.${extension}`;
     if (postcript !== filename) {
-      await fs.rename(file, newFile, () => {
-        console.log("NEW FILE: ", newFile);
-      });
+      fs.renameSync(file, newFile);
       inputFiles[index] = newFile;
     }
   }
