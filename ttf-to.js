@@ -28,7 +28,9 @@ async function ttfToWoff(file, outDir) {
         return;
       }
       fs.copyFileSync(file, woffPath);
-      util.optimize(woffPath);
+      util.optimize(woffPath).then(() => {
+        resolve(woffPath);
+      });
       // util.optimize(woffPath)
       // 	.then(() => {
       // 		resolve(woffPath);
@@ -60,7 +62,9 @@ async function ttfToWoff2(file, outDir) {
         woff2Path = path.join(outDir, `${path.basename(file, ".ttf")}.woff2`);
         fs.writeFileSync(woff2Path, woffBuffer);
         fs.copyFileSync(file, woff2Path);
-        return util.optimize(woff2Path);
+        util.optimize(woff2Path).then(() => {
+          resolve(woff2Path);
+        });
       })
       .then(() => {
         console.log(`Finish processing file: "${file}"`);

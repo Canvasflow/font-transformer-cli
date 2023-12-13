@@ -53,7 +53,10 @@ async function otfToWoff(file, outDir) {
         return;
       }
       fs.copyFileSync(file, woffPath);
-      return util.optimize(woffPath);
+      util.optimize(woffPath).then(() => {
+        resolve(woffPath);
+      });
+      //return util.optimize(woffPath);
       // .then(() => {
       // 	resolve(woffPath);
       // })
@@ -96,7 +99,10 @@ async function otfToWoff2(file, outDir) {
             return;
           }
           fs.copyFileSync(file, woff2Path);
-          return util.optimize(woff2Path);
+          util.optimize(woff2Path).then(() => {
+            resolve(woff2Path);
+          });
+          //  return util.optimize(woff2Path);
           //   util.then(() => {
           //     console.log(`Finish processing file: "${file}"`);
           //     resolve(woff2Path);
@@ -149,6 +155,7 @@ module.exports = {
       }
       printSeparator();
     }
+    console.log(woff2Files);
     return woff2Files;
   },
   otfToWoff,
