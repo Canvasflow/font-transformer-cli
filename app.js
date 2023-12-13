@@ -12,6 +12,9 @@ const flag = process.env.OPT_GROUPS;
 
 const VALID_EXTENSIONS = new Set(["ttf", "otf"]);
 
+const inDir = path.join(__dirname, "In");
+const outDir = path.join(__dirname, "Out");
+
 run(inType, outType)
   .then((outputFiles) => {
     if (!!inType && !!outType) {
@@ -29,8 +32,6 @@ async function run(inType, outType) {
   if (!inType || !outType) {
     return;
   }
-  const inDir = path.join(__dirname, "In");
-  const outDir = path.join(__dirname, "Out");
 
   const params = {
     inDir,
@@ -165,7 +166,7 @@ function removeEmptyFolders(dir) {
         fs.rmdirSync(filePath);
         continue;
       }
-      removeFolders(filePath);
+      removeEmptyFolders(filePath);
     }
   }
 }
@@ -180,21 +181,56 @@ async function getPostcripNames(inputFiles) {
     extension = extension.toLowerCase();
     console.log("opening file: ", file);
     const fontInfo = getFont(font, extension);
-    const postcript = fontInfo.name.postScriptName;
-    const newFile = `${path.dirname(file)}/${postcript}.${extension}`;
-    if (postcript !== filename) {
-      console.log(
-        "RENAMED FILE (different postscript name): ",
-        `${path.dirname(file)}/${postcript}.${extension}`,
-      );
-      fs.renameSync(file, newFile);
-      inputFiles[index] = newFile;
-    }
 
-    if (file.split(".").pop() !== extension) {
-      console.log("RENAMED FILE (extension in uppercase): ");
-      fs.renameSync(file, newFile);
-      inputFiles[index] = newFile;
+    if (fontInfo) {
+      const postcript = fontInfo.name.postScriptName;
+      console.log("poscript", postcript);
+      const newFile = `${path.dirname(file)}/${postcript}.${extension}`;
+      if (postcript !== filename) {
+        console.log(
+          "RENAMED FILE (different postscript name): ",
+          `${path.dirname(file)}/${postcript}.${extension}`,
+        );
+        fs.renameSync(file, newFile);
+        inputFiles[index] = newFile;
+      }
+
+      if (file.split(".").pop() !== extension) {
+        console.log("RENAMED FILE (extension in uppercase): ");
+        fs.renameSync(file, newFile);
+        inputFiles[index] = newFile;
+      }
+    } else {
+      inputFiles = inputFiles.filter((value) => {
+        return value !== file;
+      });
+      if (!fs.existsSync(path.join(inDir, "A-ERROR"))) {
+        fs.mkdirSync(path.join(inDir, "A-ERROR"));
+      }
+
+      if (flag) {
+        const folderName = path.basename(path.dirname(file));
+        const inDirError = path.join(inDir, "A-ERROR");
+        if (!fs.existsSync(path.join(inDirError, folderName))) {
+          fs.mkdirSync(path.join(inDirError, folderName));
+        }
+
+        fs.renameSync(
+          file,
+          path.join(
+            path.join(inDirError, folderName),
+            `${filename}.${extension}`,
+          ),
+        );
+      } else {
+        if (!fs.existsSync(path.join(inDir, "A-ERROR"))) {
+          fs.mkdirSync(path.join(inDir, "A-ERROR"));
+        }
+        fs.renameSync(
+          file,
+          path.join(path.join(inDir, "A-ERROR"), `${filename}.${extension}`),
+        );
+      }
     }
   }
   return inputFiles;
@@ -205,14 +241,19 @@ function isEmpty(path) {
 }
 
 function getFont(font, extension) {
-  return Font.create(font, {
-    type: extension,
-    subset: [65, 66],
-    hinting: true,
-    compound2simple: true,
-    inflate: null,
-    combinePath: false,
-  }).get();
+  try {
+    return Font.create(font, {
+      type: extension,
+      subset: [65, 66],
+      hinting: true,
+      compound2simple: true,
+      inflate: null,
+      combinePath: false,
+    }).get();
+  } catch (e) {
+    console.log("Invalid font: ", e);
+    return null;
+  }
 }
 module.exports = {
   run: run,

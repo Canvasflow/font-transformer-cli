@@ -32,6 +32,7 @@ async function compile() {
     console.log(`--------------------------------------------`);
   }
   if (!flag) {
+    console.log("without flag");
     await group.run();
     return;
   }
