@@ -44,7 +44,6 @@ async function otfToWoff(file, outDir) {
     });
 
     font.optimize();
-
     let woffPath = path.join(outDir, `${path.basename(file, ".otf")}.woff`);
 
     fs.writeFile(woffPath, woffBuffer, (err) => {
@@ -99,7 +98,7 @@ async function otfToWoff2(file, outDir) {
             return;
           }
           fs.copyFileSync(file, woff2Path);
-          util.optimize(woff2Path).then(() => {
+          return util.optimize(woff2Path).then(() => {
             resolve(woff2Path);
           });
           //  return util.optimize(woff2Path);

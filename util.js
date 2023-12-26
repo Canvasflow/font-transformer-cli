@@ -16,6 +16,7 @@ async function optimize(filePath) {
       if (err) {
         console.log("****************************************************");
         console.log("Error optimizing file:", filePath);
+        console.log(err);
         console.log("****************************************************");
         resolve(filePath);
 
