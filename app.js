@@ -79,7 +79,8 @@ async function fontsByPublication(params) {
 }
 
 async function processFonts({ inDir, outDir, outType, inType }) {
-  const inputFonts = await getPostcripNames(getFonts(inType, inDir));
+  const fonts = await getFonts(inType, inDir);
+  const inputFonts = await getPostcripNames(await getFonts(inType, inDir));
   let outputFiles = [];
   if (inType === "otf" && outType === "woff") {
     outputFiles = await otf2Woff.otfsToWoff(inputFonts, outDir);
@@ -98,12 +99,13 @@ async function processFonts({ inDir, outDir, outType, inType }) {
   return outputFiles;
 }
 
-function getFonts(extension, inDir) {
+async function getFonts(extension, inDir) {
   const inputs = fs.readdirSync(inDir);
   const fonts = [];
   for (const input of inputs) {
     if (fs.lstatSync(path.join(inDir, input)).isDirectory()) {
-      fonts.push(...getFolderFonts(inDir, input));
+      const folder = await getFolderFonts(inDir, input);
+      fonts.push(...folder);
     } else {
       fonts.push(input);
     }
@@ -133,6 +135,7 @@ function getFolderFonts(pathName, folder) {
       }
     }
   }
+  console.log(pathName, fonts);
   return fonts;
 }
 
@@ -172,6 +175,7 @@ function removeEmptyFolders(dir) {
 }
 
 async function getPostcripNames(inputFiles) {
+  console.log(inputFiles);
   for (let index = 0; index < inputFiles.length; index++) {
     let file = inputFiles[index];
     // file = file.toLowerCase();
@@ -193,9 +197,7 @@ async function getPostcripNames(inputFiles) {
         );
         fs.renameSync(file, newFile);
         inputFiles[index] = newFile;
-      }
-
-      if (file.split(".").pop() !== extension) {
+      } else if (file.split(".").pop() !== extension) {
         console.log("RENAMED FILE (extension in uppercase): ");
         fs.renameSync(file, newFile);
         inputFiles[index] = newFile;
