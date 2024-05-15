@@ -1,11 +1,21 @@
+const fs = require("fs");
+const path = require("path");
 const app = require("./app");
 const group = require("./group-fonts");
+const inDir = path.join(__dirname, "In");
+const { ttc2ttf } = require("./ttc2ttf.js");
 
 compile()
   .then(() => console.log("Success"))
   .catch((err) => console.error(err));
 
 async function compile() {
+  const ttcFiles = await getFonts("ttc", inDir);
+  for (const ttc of ttcFiles) {
+    console.log("PROCESS .TTC FILE BEFORE OPTIMIZE: ", ttc);
+    await ttc2ttf(ttc, `${inDir}`);
+  }
+
   const transform = [
     {
       in: "ttf",
@@ -37,4 +47,23 @@ async function compile() {
     return;
   }
   await group.runGroups();
+}
+
+async function getFonts(extension, inDir) {
+  const inputs = fs.readdirSync(inDir);
+  const fonts = [];
+  for (const input of inputs) {
+    if (fs.lstatSync(path.join(inDir, input)).isDirectory()) {
+      const folder = await getFolderFonts(inDir, input);
+      fonts.push(...folder);
+    } else {
+      fonts.push(input);
+    }
+  }
+  return fonts
+    .filter((font) => {
+      const regexString = `(.)+\.${extension}`;
+      return new RegExp(regexString, "gi").test(font);
+    })
+    .map((font) => `${path.join(inDir, font)}`);
 }

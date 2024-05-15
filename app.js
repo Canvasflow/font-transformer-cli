@@ -45,7 +45,7 @@ async function run(inType, outType) {
   }
 
   const fonts = await processFonts(params);
-  cleanupFolder(inDir, VALID_EXTENSIONS);
+  //cleanupFolder(inDir, VALID_EXTENSIONS);
   return fonts;
 }
 
@@ -80,6 +80,7 @@ async function fontsByPublication(params) {
 
 async function processFonts({ inDir, outDir, outType, inType }) {
   const fonts = await getFonts(inType, inDir);
+  console.log(fonts);
   const inputFonts = await getPostcripNames(await getFonts(inType, inDir));
   let outputFiles = [];
   if (inType === "otf" && outType === "woff") {
@@ -185,9 +186,8 @@ async function getPostcripNames(inputFiles) {
     extension = extension.toLowerCase();
     console.log("opening file: ", file);
     const fontInfo = getFont(font, extension);
-
     if (fontInfo) {
-      const postcript = fontInfo.name.postScriptName;
+      const postcript = fontInfo.name.postScriptName || filename;
       console.log("poscript", postcript);
       const newFile = `${path.dirname(file)}/${postcript}.${extension}`;
       if (postcript !== filename) {
