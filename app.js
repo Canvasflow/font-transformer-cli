@@ -12,8 +12,8 @@ const flag = process.env.OPT_GROUPS;
 
 const VALID_EXTENSIONS = new Set(["ttf", "otf"]);
 
-const inDir = path.join(__dirname, "In");
-const outDir = path.join(__dirname, "Out");
+const inDir = path.join(process.env.INDIR) || path.join(__dirname, "In");
+const outDir = path.join(process.env.OUTDIR) || path.join(__dirname, "Out");
 
 run(inType, outType)
   .then((outputFiles) => {

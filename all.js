@@ -2,8 +2,10 @@ const fs = require("fs");
 const path = require("path");
 const app = require("./app");
 const group = require("./group-fonts");
-const inDir = path.join(__dirname, "In");
+const inDir = path.join(process.env.INDIR) || path.join(__dirname, "In");
 const { ttc2ttf } = require("./ttc2ttf.js");
+
+// INDIR=/Users/josejuan2412/Projects/INTEST OUTDIR=/Users/josejuan2412/Projects/OUTTEST  npm run optimize
 
 compile()
   .then(() => console.log("Success"))
@@ -12,7 +14,7 @@ compile()
 async function compile() {
   const ttcFiles = await getFonts("ttc", inDir);
   for (const ttc of ttcFiles) {
-    console.log("PROCESS .TTC FILE BEFORE OPTIMIZE: ", ttc);
+    // console.log("PROCESS .TTC FILE BEFORE OPTIMIZE: ", ttc);
     await ttc2ttf(ttc, `${inDir}`);
   }
 

@@ -1,9 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
-const outDir = path.join(__dirname, "Out");
-const inDir = path.join(__dirname, "In");
-//run();
+const inDir = path.join(process.env.INDIR) || path.join(__dirname, "In");
+const outDir = path.join(process.env.OUTDIR) || path.join(__dirname, "Out");
 
 function run() {
   const fonts = getFonts(outDir);
