@@ -1,10 +1,16 @@
 const fs = require("fs");
 const path = require("path");
 
-const inDir = path.join(process.env.INDIR) || path.join(__dirname, "In");
-const outDir = path.join(process.env.OUTDIR) || path.join(__dirname, "Out");
+let inDir = path.join(__dirname, "In");
+let outDir = path.join(__dirname, "Out");
 
 function run() {
+  if (process.env.INDIR) {
+    inDir = path.join(process.env.INDIR);
+  }
+  if (process.env.OUTDIR) {
+    outDir = path.join(process.env.OUTDIR);
+  }
   const fonts = getFonts(outDir);
   createFontsDir(fonts, outDir);
   copyFontsToDir(fonts, outDir);
