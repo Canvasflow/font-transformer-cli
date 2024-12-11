@@ -5,9 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node all.js",
-    "optimize": "node all.js --optimize",
+    "optimize": "node all.js --optimize --cleanup",
     "optimize-groups": "OPT_GROUPS=true node all.js --optimize",
-    "optimize-cleanup": "node all.js --optimize --cleanup",
     "ttf:woff": "IN_TYPE=ttf OUT_TYPE=woff node app.js",
     "ttf:woff2": "IN_TYPE=ttf OUT_TYPE=woff2 node app.js",
     "ttf:woff:woff2": "IN_TYPE=ttf OUT_TYPE=woff node app.js && IN_TYPE=ttf OUT_TYPE=woff2 node app.js",

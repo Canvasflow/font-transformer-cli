@@ -3,6 +3,8 @@ const path = require("path");
 const app = require("./app");
 const group = require("./group-fonts");
 let inDir = path.join(__dirname, "In");
+let outDir = path.join(__dirname, "Out");
+
 const { ttc2ttf } = require("./ttc2ttf.js");
 
 // INDIR=/path/to/in OUTDIR=/path/to/out npm run optimize
@@ -19,7 +21,11 @@ async function compile() {
     outDir = path.join(process.env.OUTDIR);
   }
 
-  if (process.argv.length && process.argv[3] === "--cleanup") {
+  if (
+    process.argv.length &&
+    (process.argv[3] === "--cleanup" || process.argv[2] === "--cleanup")
+  ) {
+    console.log("cleaning up out folder");
     emptyDir(outDir);
   }
 
