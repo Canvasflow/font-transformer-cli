@@ -15,6 +15,14 @@ async function compile() {
   if (process.env.INDIR) {
     inDir = path.join(process.env.INDIR);
   }
+  if (process.env.OUTDIR) {
+    outDir = path.join(process.env.OUTDIR);
+  }
+
+  if (process.argv.length && process.argv[3] === "--cleanup") {
+    emptyDir(outDir);
+  }
+
   const ttcFiles = await getFonts("ttc", inDir);
   for (const ttc of ttcFiles) {
     // console.log("PROCESS .TTC FILE BEFORE OPTIMIZE: ", ttc);
@@ -71,4 +79,20 @@ async function getFonts(extension, inDir) {
       return new RegExp(regexString, "gi").test(font);
     })
     .map((font) => `${path.join(inDir, font)}`);
+}
+
+async function emptyDir(dirPath) {
+  const dirContents = fs.readdirSync(dirPath);
+  for (const fileOrDirPath of dirContents) {
+    try {
+      const fullPath = path.join(dirPath, fileOrDirPath);
+      const stat = fs.statSync(fullPath);
+      if (stat.isDirectory()) {
+        if (fs.readdirSync(fullPath).length) await emptyDir(fullPath);
+        fs.rmdirSync(fullPath);
+      } else fs.unlinkSync(fullPath);
+    } catch (ex) {
+      console.error(ex.message);
+    }
+  }
 }

@@ -51,7 +51,6 @@ async function run(inType, outType) {
   }
 
   const fonts = await processFonts(params);
-  //cleanupFolder(inDir, VALID_EXTENSIONS);
   return fonts;
 }
 
